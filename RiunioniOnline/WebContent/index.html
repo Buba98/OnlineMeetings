@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Login page</title>
+<script src="utils.js" charset="utf-8" defer></script>
+<script src="loginManagement.js" charset="utf-8" defer></script>
+
+</head>
+<body>
+	<h1>Welcome to the meeting application</h1>
+
+	<form action="#">
+		<fieldset>
+			<p id="email" hidden="hidden">Email: <input disabled="disabled" type="email" id="emailInput" name="email" placeholder="Required only on signUp" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required></p> <br>
+			Username: <input type="text" name="username" required> <br>
+			Password: <input type="password" name="pwd" required><br>
+			<input id="loginbutton" type="button" value="login">
+			<input id="signupbutton" type="button" value="sign up">
+			<p id="errormessage"></p>
+		</fieldset>
+	</form>
+
+</body>
+</html>

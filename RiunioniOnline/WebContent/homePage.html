@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Home</title>
+<link rel="stylesheet" type="text/css" media="all"
+	href="CSS/mystyle.css" />
+<script src="utils.js" charset="utf-8" defer></script>
+<script src="meetingManagement.js" charset="utf-8" defer></script>
+</head>
+<body>
+	<div align="right">
+		<a href="Logout">Logout</a>
+	</div>
+	<h1>Welcome to the Client-Server Meetings Management Home Page</h1>
+	<p>
+		Nice to see you again <span id="id_username"></span>
+	</p>
+	<div id="id_alert" class="alertmessage"></div>
+	<table>
+		<tr>
+			<td><table class="boxed">
+					<caption>Own meetings</caption>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Date : time</th>
+							<th>Date Expiring : time</th>
+						</tr>
+					</thead>
+					<tbody id="id_ownMeetingsTable">
+					</tbody>
+				</table> <br>
+				<table class="boxed">
+					<caption>Other's meetings</caption>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Date : time</th>
+							<th>Date Expiring : time</th>
+						</tr>
+					</thead>
+					<tbody id="id_otherMeetingsTable">
+					</tbody>
+				</table> <br>
+				<form id="id_newMeeting" action="#">
+					<h1>Create new meeting</h1>
+					<fieldset>
+						Name: <input type="text" name="name" required><br> 
+						Date: <input type="date" name="date" required> <input type="time" id="appt" name="hourAndMinutes" required><br>
+						Date expiring: <input type="date" name="expirationDate" required> <input type="time" id="appt" name="expirationHourAndMinutes" required> <br> 
+						<input type="button" id="id_goToPartecipantsModal" value="Add partecipants">
+					</fieldset>
+				</form></td>
+		</tr>
+	</table>
+	<div id="id_newMeetingPartecipantsModal" class="modal">
+		<div class="modal-content">
+			<p>
+				Participants: <br>
+
+				<!-- <intput type="checkbox" name="partec
+		ipants_newMeteeting[]" value="id_person"> person_name-->
+			</p>
+			<button id="id_sendNewMeeting">Send</button>
+			</p>
+		</div>
+
+	</div>
+</body>
+</html>
