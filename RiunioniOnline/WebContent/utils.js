@@ -14,6 +14,16 @@ function makeCall(method, url, formElement, cback, reset = true) {
 	}
 }
 
+function postJson(url, cback, json) {
+	var req = new XMLHttpRequest();
+	xhr.open("POST", url);
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.onreadystatechange = function() {
+		cback(req)
+	};
+	xhr.send(json);
+}
+
 function setCookie(name, value, days) {
 	var expires = "";
 	if (days) {
@@ -36,3 +46,4 @@ function getCookie(name) {
 function eraseCookie(name) {
 	document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
+

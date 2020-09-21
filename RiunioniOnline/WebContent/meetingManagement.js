@@ -12,17 +12,17 @@
 
 
 	function MeetingData() {
-		var row, name, date, expirationDate, input;
+		var row, name, date, expirationDate, input, lable;
 		var self = this;
 		document.querySelector("a[href='Logout']").addEventListener('click', () => {
-			self.logout;
+			self.logout();
 		});
 
 		this.newMeeting = ({
 			name: null,
 			date: null,
 			expirationDate: null,
-			partecipants: null
+			partecipants: []
 		});
 
 		this.data = ({
@@ -41,36 +41,55 @@
 			this.data.buttonSelectPartecipants.addEventListener('click', (e) => {
 
 				var form = e.target.closest("form");
-				console.log(form.name.value);
+				
+				console.log(form.date);
+				console.log(form.date.value);
 
 				if (form.checkValidity()) {
 
 					this.newMeeting.name = form.name.value;
 					this.newMeeting.date = form.date + form.hourAndMinutes;
 					this.newMeeting.expirationDate = form.expirationDate + form.expirationHourAndMinutes;
+			
 					this.data.partecipantsModal.style.display = "block";
 				} else {
 					form.reportValidity();
 				}
 			}, false);
 
-			this.data.buttonSendNewMeeting.addEventListener('click', () => {
-				makeCall("POST", 'MeetingHandler', JSON.stringify(this.newMeeting),
-					function(req) {
-						if (req.readyState == XMLHttpRequest.DONE) {
-							var message = req.responseText;
-							switch (req.status) {
-								case 200:
-									this.updateNewMeeting();
-									break;
-								case 401:
-									this.logout();
-									break;
-							}
-							this.alert(message);
-						}
+			self.data.buttonSendNewMeeting.addEventListener('click', () => {
+				
+				document.getElementById("id_alert_newMeeting").innerText = "";
+				
+				var chk_arr = document.getElementsById("checkbox[]");
+
+				for (k = 0; k < chk_arr.length; k++) {
+					if (chk_arr[k].checked) {
+						self.newMeeting.partecipants.push(chk_arr[k].value);
 					}
-				);
+				}
+
+				if (self.newMeeting.partecipants.length > 0) {
+
+					makeCall("POST", 'MeetingHandler', JSON.stringify(this.newMeeting),
+						function(req) {
+							if (req.readyState == XMLHttpRequest.DONE) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
+										this.updateNewMeeting();
+										break;
+									case 401:
+										this.logout();
+										break;
+								}
+								this.alert(message);
+							}
+						}
+					);
+				} else {
+					document.getElementById("id_alert_newMeeting").innerText = "Select at least 1 participant"
+				}
 			});
 
 
@@ -99,7 +118,7 @@
 				row.appendChild(date);
 				row.appendChild(expirationDate);
 
-				this.data.ownMeetings.appendChild(row);
+				self.data.ownMeetings.appendChild(row);
 			});
 
 			json.otherMeetings.forEach(function(meeting) {
@@ -118,18 +137,23 @@
 				row.appendChild(date);
 				row.appendChild(expirationDate);
 
-				this.data.otherMeetings.appendChild(row);
+				self.data.otherMeetings.appendChild(row);
 			});
 
 			json.idsAndNames.forEach(function(idAndName) {
 				if (idAndName.id != getCookie("person_id")) {
 					input = document.createElement("input");
 					input.setAttribute("type", "checkbox");
-					input.setAttribute("value", idAndName.name);
-					input.textContent = idAndName.userName;
+					input.setAttribute("value", idAndName.id);
+					input.setAttribute("id", "checkbox[]")
 
-					this.data.partecipantsInput.appendChild(input);
-					this.data.partecipantsInput.appendChild(document.createElement("br"));
+					lable = document.createElement("lable");
+					lable.innerText = idAndName.username;
+
+					self.data.partecipantsInput.appendChild(input);
+					self.data.partecipantsInput.appendChild(lable);
+
+					self.data.partecipantsInput.appendChild(document.createElement("br"));
 				}
 			});
 
@@ -166,7 +190,7 @@
 				name: null,
 				date: null,
 				expirationDate: null,
-				partecipants: null
+				partecipants: []
 			});
 		};
 	}

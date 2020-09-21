@@ -120,7 +120,7 @@ public class MeetingHandler extends HttpServlet {
 		for (String[] idAndName : idsAndNames) {
 			idAndNameJson = new JSONObject();
 			idAndNameJson.put("id", idAndName[0]);
-			idAndNameJson.put("userName", idAndName[1]);
+			idAndNameJson.put("username", idAndName[1]);
 			idsAndNamesJson.put(idAndNameJson);
 		}
 		jsonObject.put("idsAndNames", idsAndNamesJson);
