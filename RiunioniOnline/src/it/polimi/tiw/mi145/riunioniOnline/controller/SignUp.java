@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import it.polimi.tiw.mi145.riunioniOnline.beans.Person;
-import it.polimi.tiw.mi145.riunioniOnline.dao.PersonDAO;
+import it.polimi.tiw.mi145.riunioniOnline.beans.User;
+import it.polimi.tiw.mi145.riunioniOnline.dao.UserDAO;
 import it.polimi.tiw.mi145.riunioniOnline.utils.ConnectionHandler;
 
 @WebServlet("/SignUp")
@@ -43,10 +43,10 @@ public class SignUp extends HttpServlet {
 			response.getWriter().println("Credentials must be not null");
 			return;
 		}
-		PersonDAO personDao = new PersonDAO(connection);
-		Person person = null;
+		UserDAO personDao = new UserDAO(connection);
+		User person = null;
 		try {
-			person = personDao.addPerson(usrn, pwd);
+			person = personDao.addUser(usrn, pwd);
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println("Internal server error, retry later");

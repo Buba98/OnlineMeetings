@@ -9,16 +9,16 @@ import java.util.Date;
 import java.util.List;
 
 import it.polimi.tiw.mi145.riunioniOnline.beans.Meeting;
-import it.polimi.tiw.mi145.riunioniOnline.beans.Person;
+import it.polimi.tiw.mi145.riunioniOnline.beans.User;
 
-public class PersonDAO {
+public class UserDAO {
 	private Connection connection;
 
-	public PersonDAO(Connection connection) {
+	public UserDAO(Connection connection) {
 		this.connection = connection;
 	}
 
-	private Person fromResult(ResultSet result) throws SQLException {
+	private User fromResult(ResultSet result) throws SQLException {
 		IntersectionDAO intersectionDAO = new IntersectionDAO(connection);
 		MeetingDAO meetingDAO = new MeetingDAO(connection);
 
@@ -49,10 +49,10 @@ public class PersonDAO {
 			}
 		}
 
-		return new Person(id, username, password, ownMeetings, otherMeetings);
+		return new User(id, username, password, ownMeetings, otherMeetings);
 	}
 
-	public Person checkCredentials(String userName, String password) throws SQLException {
+	public User checkCredentials(String userName, String password) throws SQLException {
 		String query = "SELECT * from user WHERE username = ? AND password = ?";
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 			preparedStatement.setString(1, userName);
@@ -68,16 +68,16 @@ public class PersonDAO {
 		}
 	}
 
-	public Person addPerson(String userName, String password) throws SQLException {
-		if (getPersonByUserName(userName) == null) {
+	public User addUser(String username, String password) throws SQLException {
+		if (getUserByUsername(username) == null) {
 			String query = "INSERT into user (username, password) VALUES(?, ?)";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-				preparedStatement.setString(1, userName);
+				preparedStatement.setString(1, username);
 				preparedStatement.setString(2, password);
 				preparedStatement.executeUpdate();
 
-				return getPersonByUserName(userName);
+				return getUserByUsername(username);
 			}
 		} else
 			return null;
@@ -101,7 +101,7 @@ public class PersonDAO {
 		}
 	}
 
-	public Person getPersonById(Integer id) throws SQLException {
+	public User getUserById(Integer id) throws SQLException {
 		String query = "SELECT * from user WHERE iduser = ?";
 
 		try (PreparedStatement pstatement = connection.prepareStatement(query)) {
@@ -118,11 +118,11 @@ public class PersonDAO {
 		}
 	}
 
-	public Person getPersonByUserName(String userName) throws SQLException {
+	public User getUserByUsername(String username) throws SQLException {
 		String query = "SELECT * from user WHERE username = ?";
 
 		try (PreparedStatement pstatement = connection.prepareStatement(query)) {
-			pstatement.setString(1, userName);
+			pstatement.setString(1, username);
 			try (ResultSet result = pstatement.executeQuery();) {
 				if (!result.isBeforeFirst())
 					return null;

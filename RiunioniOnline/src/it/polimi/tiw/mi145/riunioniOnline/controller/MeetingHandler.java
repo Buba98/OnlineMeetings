@@ -21,9 +21,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import it.polimi.tiw.mi145.riunioniOnline.beans.Meeting;
-import it.polimi.tiw.mi145.riunioniOnline.beans.Person;
+import it.polimi.tiw.mi145.riunioniOnline.beans.User;
 import it.polimi.tiw.mi145.riunioniOnline.dao.MeetingDAO;
-import it.polimi.tiw.mi145.riunioniOnline.dao.PersonDAO;
+import it.polimi.tiw.mi145.riunioniOnline.dao.UserDAO;
 import it.polimi.tiw.mi145.riunioniOnline.utils.ConnectionHandler;
 import it.polimi.tiw.mi145.riunioniOnline.utils.DateHandler;
 import it.polimi.tiw.mi145.riunioniOnline.utils.StringValidation;
@@ -59,14 +59,14 @@ public class MeetingHandler extends HttpServlet {
 			return;
 		}
 
-		Person person = null;
+		User person = null;
 		List<Meeting> ownMeetings = null;
 		List<Meeting> otherMeetings = null;
 		List<String[]> idsAndNames = null;
 
 		try {
-			PersonDAO personDAO = new PersonDAO(connection);
-			person = personDAO.getPersonById(Integer.valueOf(id));
+			UserDAO userDAO = new UserDAO(connection);
+			person = userDAO.getUserById(Integer.valueOf(id));
 			ownMeetings = new ArrayList<>();
 
 			MeetingDAO meetingDAO = new MeetingDAO(connection);
@@ -81,7 +81,7 @@ public class MeetingHandler extends HttpServlet {
 				otherMeetings.add(meetingDAO.getMeetingbyId(_id));
 			}
 
-			idsAndNames = personDAO.getAllIdsAndNames();
+			idsAndNames = userDAO.getAllIdsAndNames();
 
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
