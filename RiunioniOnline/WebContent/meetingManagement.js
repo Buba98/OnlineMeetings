@@ -1,12 +1,4 @@
 (function() {
-
-	this.newMeeting = ({
-		name: null,
-		date: null,
-		expirationDate: null,
-		partecipants: null
-	});
-
 	var meetingData = null;
 
 	window.addEventListener("load", () => {
@@ -20,11 +12,19 @@
 
 
 	function MeetingData() {
-		var row, name, expirationDate, input;
+		var row, name, date, expirationDate, input;
 		var self = this;
 		document.querySelector("a[href='Logout']").addEventListener('click', () => {
 			self.logout;
 		});
+
+		this.newMeeting = ({
+			name: null,
+			date: null,
+			expirationDate: null,
+			partecipants: null
+		});
+
 		this.data = ({
 			alert: document.getElementById("id_alert"),
 			ownMeetings: document.getElementById("id_ownMeetingsTable"),
@@ -41,10 +41,11 @@
 			this.data.buttonSelectPartecipants.addEventListener('click', (e) => {
 
 				var form = e.target.closest("form");
-				console.log(form.name);
+				console.log(form.name.value);
 
 				if (form.checkValidity()) {
-					this.newMeeting.name = form.name;
+
+					this.newMeeting.name = form.name.value;
 					this.newMeeting.date = form.date + form.hourAndMinutes;
 					this.newMeeting.expirationDate = form.expirationDate + form.expirationHourAndMinutes;
 					this.data.partecipantsModal.style.display = "block";
@@ -54,14 +55,29 @@
 			}, false);
 
 			this.data.buttonSendNewMeeting.addEventListener('click', () => {
-
+				makeCall("POST", 'MeetingHandler', JSON.stringify(this.newMeeting),
+					function(req) {
+						if (req.readyState == XMLHttpRequest.DONE) {
+							var message = req.responseText;
+							switch (req.status) {
+								case 200:
+									this.updateNewMeeting();
+									break;
+								case 401:
+									this.logout();
+									break;
+							}
+							this.alert(message);
+						}
+					}
+				);
 			});
 
 
 
 			window.addEventListener('click', (e) => {
 				if (e.target == this.data.partecipantsModal) {
-					this.data.partecipantsModal.partecipantsModal.style.display = "none";
+					this.data.partecipantsModal.style.display = "none";
 				}
 			}, false);
 
@@ -126,6 +142,32 @@
 		this.logout = function() {
 			eraseCookie("person_id");
 			window.location.href = "index.html";
+		};
+
+		this.updateNewMeeting = function() {
+			row = document.createElement("tr");
+
+			name = document.createElement("td");
+			name.textContent = this.newMeeting.name;
+
+			date = document.createElement("td");
+			date.textContent = this.newMeeting.date;
+
+			expirationDate = document.createElement("td");
+			expirationDate.textContent = meeting.expirationDate;
+
+			row.appendChild(name);
+			row.appendChild(date);
+			row.appendChild(expirationDate);
+
+			this.data.ownMeetings.appendChild(row);
+
+			this.newMeeting = ({
+				name: null,
+				date: null,
+				expirationDate: null,
+				partecipants: null
+			});
 		};
 	}
 

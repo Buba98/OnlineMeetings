@@ -19,7 +19,7 @@ public class IntersectionDAO {
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 			preparedStatement.setInt(1, userId);
 			preparedStatement.setInt(2, meetingId);
-			preparedStatement.executeQuery();
+			preparedStatement.executeUpdate();
 		}
 	}
 
@@ -29,7 +29,7 @@ public class IntersectionDAO {
 			pstatement.setInt(1, userId);
 			try (ResultSet result = pstatement.executeQuery()) {
 				if (!result.isBeforeFirst())
-					return null;
+					return new ArrayList<>();
 				else {
 					ArrayList<Integer> toReturn = new ArrayList<>();
 					while (result.next()) {
@@ -40,7 +40,7 @@ public class IntersectionDAO {
 			}
 		}
 	}
-	
+
 	public List<Integer> getAllUserIdByMeetingId(int meetingId) throws SQLException {
 		String query = "SELECT meeting from intersection WHERE meeting = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query)) {

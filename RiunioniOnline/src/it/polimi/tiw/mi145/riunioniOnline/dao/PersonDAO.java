@@ -75,14 +75,9 @@ public class PersonDAO {
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 				preparedStatement.setString(1, userName);
 				preparedStatement.setString(2, password);
-				try (ResultSet result = preparedStatement.executeQuery()) {
-					if (!result.isBeforeFirst())
-						return null;
-					else {
-						result.next();
-						return fromResult(result);
-					}
-				}
+				preparedStatement.executeUpdate();
+
+				return getPersonByUserName(userName);
 			}
 		} else
 			return null;

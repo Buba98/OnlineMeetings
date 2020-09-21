@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,12 +28,14 @@ public class MeetingDAO {
 		IntersectionDAO intersectionDAO = new IntersectionDAO(connection);
 		String query = "INSERT into meeting (datestart, dateend, owner, name) VALUES(?, ?, ?, ?)";
 
-		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+		try (PreparedStatement preparedStatement = connection.prepareStatement(query,
+				Statement.RETURN_GENERATED_KEYS)) {
 			preparedStatement.setDate(1, DateHandler.fromUtilToSql(date));
 			preparedStatement.setDate(2, DateHandler.fromUtilToSql(expirationDate));
 			preparedStatement.setInt(3, owner);
 			preparedStatement.setString(4, name);
-			try (ResultSet result = preparedStatement.executeQuery()) {
+			preparedStatement.executeUpdate();
+			try (ResultSet result = preparedStatement.getGeneratedKeys()) {
 				Integer meetingId = result.getInt("idmeeting");
 
 				intersectionDAO.addIntersection(owner, meetingId);
