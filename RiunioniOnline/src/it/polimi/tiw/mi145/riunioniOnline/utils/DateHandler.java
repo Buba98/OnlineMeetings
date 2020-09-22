@@ -11,8 +11,8 @@ public class DateHandler {
 	}
 
 	public static java.util.Date fromStringToUtil(String dateInString) throws ParseException {
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a", Locale.ENGLISH);
-		formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+		formatter.setTimeZone(TimeZone.getTimeZone("Europe/Rome"));
 
 		return formatter.parse(dateInString);
 	}

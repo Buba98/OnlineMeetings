@@ -41,16 +41,13 @@
 			this.data.buttonSelectPartecipants.addEventListener('click', (e) => {
 
 				var form = e.target.closest("form");
-				
-				console.log(form.date);
-				console.log(form.date.value);
 
 				if (form.checkValidity()) {
 
 					this.newMeeting.name = form.name.value;
-					this.newMeeting.date = form.date + form.hourAndMinutes;
-					this.newMeeting.expirationDate = form.expirationDate + form.expirationHourAndMinutes;
-			
+					this.newMeeting.date = form.date.value + " " + form.hourAndMinutes.value + ":00";
+					this.newMeeting.expirationDate = form.expirationDate.value + " " + form.expirationHourAndMinutes.value + ":00";
+
 					this.data.partecipantsModal.style.display = "block";
 				} else {
 					form.reportValidity();
@@ -58,9 +55,9 @@
 			}, false);
 
 			self.data.buttonSendNewMeeting.addEventListener('click', () => {
-				
+
 				document.getElementById("id_alert_newMeeting").innerText = "";
-				
+
 				var chk_arr = document.getElementsById("checkbox[]");
 
 				for (k = 0; k < chk_arr.length; k++) {

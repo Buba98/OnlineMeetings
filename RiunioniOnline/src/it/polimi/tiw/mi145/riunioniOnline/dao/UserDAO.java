@@ -105,7 +105,7 @@ public class UserDAO {
 		String query = "SELECT * from user WHERE iduser = ?";
 
 		try (PreparedStatement pstatement = connection.prepareStatement(query)) {
-			pstatement.setString(1, id.toString());
+			pstatement.setInt(1, id);
 			try (ResultSet result = pstatement.executeQuery()) {
 
 				if (!result.isBeforeFirst())

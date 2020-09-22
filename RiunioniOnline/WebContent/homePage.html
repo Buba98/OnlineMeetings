@@ -46,14 +46,12 @@
 				<form id="id_newMeeting" action="#">
 					<h1>Create new meeting</h1>
 					<fieldset>
-						Name: <input type="text" name="name" id="id_newMeetingName"
-							required><br> Date: <input type="date" name="date"
-							id="id_newMeetingDate" required> <input type="time"
-							id="appt" name="hourAndMinutes" id="id_newMeetingHourAndMinute"
-							required><br> Date expiring: <input type="date"
-							name="expirationDate" required> <input type="time"
-							id="" name="expirationHourAndMinutes" required> <br>
-						<input type="button" id="id_goToPartecipantsModal"
+						Name: <input type="text" name="name" required><br>
+						Date: <input type="date" name="date" required> <input
+							type="time" name="hourAndMinutes" required><br> Date
+						expiring: <input type="date" name="expirationDate" required>
+						<input type="time" name="expirationHourAndMinutes" required>
+						<br> <input type="button" id="id_goToPartecipantsModal"
 							value="Add partecipants">
 					</fieldset>
 				</form></td>
@@ -61,14 +59,11 @@
 	</table>
 	<div id="id_newMeetingPartecipantsModal" class="modal">
 		<div class="modal-content">
-				Participants: <br>
-				<div id ="id_newMeetingPartecipantsCheckBoxs">
-				
-				</div>
 
+			<div id="id_alert_newMeeting" class="alertmessage"></div>
 
-			<!-- <intput type="checkbox" name="partec
-		ipants_newMeteeting[]" value="id_person"> person_name-->
+			Participants: <br>
+			<div id="id_newMeetingPartecipantsCheckBoxs"></div>
 
 			<button id="id_sendNewMeeting">Send</button>
 		</div>
