@@ -19,8 +19,16 @@ public class MeetingDAO {
 		this.connection = connection;
 	}
 
-	public void removeMeeting(Integer id) {
-
+	public void removeMeeting(Integer id) throws SQLException {
+		IntersectionDAO intersectionDAO = new IntersectionDAO(connection);
+		String query = "DELETE from meeting WHERE idmeeting = ?";
+		
+		intersectionDAO.removeIntersectionByMeetingId(id);
+		
+		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setInt(1, id);
+			preparedStatement.executeUpdate();
+		}
 	}
 
 	public void addMeating(String name, Date date, Date expirationDate, List<Integer> participants, Integer owner)
@@ -30,18 +38,24 @@ public class MeetingDAO {
 
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query,
 				Statement.RETURN_GENERATED_KEYS)) {
-			preparedStatement.setDate(1, DateHandler.fromUtilToSql(date));
-			preparedStatement.setDate(2, DateHandler.fromUtilToSql(expirationDate));
+			preparedStatement.setTimestamp(1, DateHandler.fromUtilToTimestamp(date));
+			preparedStatement.setTimestamp(2, DateHandler.fromUtilToTimestamp(expirationDate));
 			preparedStatement.setInt(3, owner);
 			preparedStatement.setString(4, name);
 			preparedStatement.executeUpdate();
 			try (ResultSet result = preparedStatement.getGeneratedKeys()) {
-				Integer meetingId = result.getInt("idmeeting");
+				if (!result.isBeforeFirst())
+					return;
+				else {
+					result.next();
 
-				intersectionDAO.addIntersection(owner, meetingId);
+					Integer meetingId = result.getInt(1);
 
-				for (Integer participant : participants) {
-					intersectionDAO.addIntersection(participant, meetingId);
+					intersectionDAO.addIntersection(owner, meetingId);
+
+					for (Integer participant : participants) {
+						intersectionDAO.addIntersection(participant, meetingId);
+					}
 				}
 			}
 		}
@@ -49,17 +63,17 @@ public class MeetingDAO {
 
 	public Meeting getMeetingbyId(Integer id) throws SQLException {
 		IntersectionDAO intersectionDAO = new IntersectionDAO(connection);
-		String query = "SELECT * from meeting WHERE id = ?";
+		String query = "SELECT * from meeting WHERE idmeeting = ?";
 
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 			preparedStatement.setInt(1, id);
-			try (ResultSet result = connection.prepareStatement(query).executeQuery()) {
+			try (ResultSet result = preparedStatement.executeQuery()) {
 				if (!result.isBeforeFirst())
 					return null;
 				else {
 					result.next();
-					Date date = result.getDate("datestart");
-					Date expirationDate = result.getDate("dateend");
+					Date date = DateHandler.fromTimestampToUtil(result.getTimestamp("datestart"));
+					Date expirationDate = DateHandler.fromTimestampToUtil(result.getTimestamp("dateend"));
 					Integer owner = result.getInt("owner");
 					String name = result.getString("name");
 

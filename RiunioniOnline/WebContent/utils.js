@@ -14,14 +14,14 @@ function makeCall(method, url, formElement, cback, reset = true) {
 	}
 }
 
-function postJson(url, cback, json) {
+function postJson(url, json, cback) {
 	var req = new XMLHttpRequest();
-	xhr.open("POST", url);
-	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.onreadystatechange = function() {
+	req.open("POST", url);
+	req.setRequestHeader("Content-Type", "application/json");
+	req.onreadystatechange = function() {
 		cback(req)
 	};
-	xhr.send(json);
+	req.send(json);
 }
 
 function setCookie(name, value, days) {
@@ -46,4 +46,19 @@ function getCookie(name) {
 function eraseCookie(name) {
 	document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
+
+
+Date.prototype.addHoursAndMinutes = function(h, m) {
+	this.setTime(this.getTime() + (h * 60 * 60 * 1000) + (m * 60 * 1000));
+	return this;
+}
+
+Date.prototype.yyyymmddhhMMss = function() {
+	var mm = this.getMonth() + 1; // getMonth() is zero-based
+	var dd = this.getDate();
+	var hh = this.getHours();
+	var minutes = this.getMinutes();
+
+	return this.getFullYear() + "-" + (mm > 9 ? '' : '0') + mm + "-" + (dd > 9 ? '' : '0') + dd + " " + (hh > 9 ? '' : '0') + hh + ":" + (minutes > 9 ? '' : '0') + minutes + ":" + 00;
+};
 

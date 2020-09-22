@@ -48,10 +48,10 @@ public class Meeting {
 
 	public String toJson() {
 
-		JSONObject partecipantsJson = new JSONObject();
+		JSONObject participantsJson = new JSONObject();
 		int i = 0;
 		for (Integer id : participants) {
-			partecipantsJson.put(String.valueOf(i), id.toString());
+			participantsJson.put(String.valueOf(i), id.toString());
 			i++;
 		}
 
@@ -60,7 +60,7 @@ public class Meeting {
 				.put("name", name)
 				.put("date", date.toString())
 				.put("expirationDate", expirationDate.toString())
-				.put("partecipants", partecipantsJson.toString())
+				.put("participants", participantsJson.toString())
 				.put("owner", owner.toString())
 				.toString();
 	}

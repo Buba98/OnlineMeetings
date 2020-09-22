@@ -42,7 +42,7 @@ public class IntersectionDAO {
 	}
 
 	public List<Integer> getAllUserIdByMeetingId(int meetingId) throws SQLException {
-		String query = "SELECT meeting from intersection WHERE meeting = ?";
+		String query = "SELECT user from intersection WHERE meeting = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query)) {
 			pstatement.setInt(1, meetingId);
 			try (ResultSet result = pstatement.executeQuery()) {
@@ -56,6 +56,14 @@ public class IntersectionDAO {
 					return toReturn;
 				}
 			}
+		}
+	}
+	
+	public void removeIntersectionByMeetingId(int meetingId) throws SQLException {
+		String query = "DELETE from intersection WHERE meeting = ?";
+		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setInt(1, meetingId);
+			preparedStatement.executeUpdate();
 		}
 	}
 }

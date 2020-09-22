@@ -10,9 +10,9 @@
 </head>
 <body>
 	<div align="right">
-		<a href="Logout">Logout</a>
+		<a id="id_logout">Logout</a>
 	</div>
-	<h1>Welcome to the Client-Server Meetings Management Home Page</h1>
+	<h1>Welcome to the Client-Server Meetings Management</h1>
 	<p>
 		Nice to see you again <span id="id_username"></span>
 	</p>
@@ -48,22 +48,34 @@
 					<fieldset>
 						Name: <input type="text" name="name" required><br>
 						Date: <input type="date" name="date" required> <input
-							type="time" name="hourAndMinutes" required><br> Date
-						expiring: <input type="date" name="expirationDate" required>
-						<input type="time" name="expirationHourAndMinutes" required>
-						<br> <input type="button" id="id_goToPartecipantsModal"
-							value="Add partecipants">
+							type="time" name="hourAndMinutes" required><br> 
+							<!-- Date
+						expiring: <input type="date" id="expirationDate"
+							name="expirationDate" required> <input type="time"
+							name="expirationHourAndMinutes" required> <br> 
+							 -->
+							 Duration:
+							 <label for="hours">hours</label>
+							 <input type="number" id="hours" name="expirationHours" min="0">
+							 <label for="minutes">minutes</label>
+							 <input type="number" id="minutes" name="expirationMinutes" min="0" max="59"><br>
+							 
+							 Max participants:
+							 <input type="number" id="maxParticipants" name="maxParticipants" min="1" value="1"><br>
+							 
+							
+							<input type="button" id="id_goToParticipantsModal" value="Add participants">
 					</fieldset>
 				</form></td>
 		</tr>
 	</table>
-	<div id="id_newMeetingPartecipantsModal" class="modal">
+	<div id="id_newMeetingParticipantsModal" class="modal">
 		<div class="modal-content">
 
 			<div id="id_alert_newMeeting" class="alertmessage"></div>
 
 			Participants: <br>
-			<div id="id_newMeetingPartecipantsCheckBoxs"></div>
+			<div id="id_newMeetingParticipantsCheckBoxs"></div>
 
 			<button id="id_sendNewMeeting">Send</button>
 		</div>

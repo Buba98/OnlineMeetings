@@ -14,41 +14,55 @@
 	function MeetingData() {
 		var row, name, date, expirationDate, input, lable;
 		var self = this;
-		document.querySelector("a[href='Logout']").addEventListener('click', () => {
-			self.logout();
-		});
+
 
 		this.newMeeting = ({
 			name: null,
 			date: null,
 			expirationDate: null,
-			partecipants: []
+			participants: []
 		});
 
 		this.data = ({
 			alert: document.getElementById("id_alert"),
+			logout: document.getElementById("id_logout"),
 			ownMeetings: document.getElementById("id_ownMeetingsTable"),
 			otherMeetings: document.getElementById("id_otherMeetingsTable"),
 			username: document.getElementById("id_username"),
-			partecipantsModal: document.getElementById("id_newMeetingPartecipantsModal"),
-			partecipantsInput: document.getElementById("id_newMeetingPartecipantsCheckBoxs"),
+			participantsModal: document.getElementById("id_newMeetingParticipantsModal"),
+			participantsInput: document.getElementById("id_newMeetingParticipantsCheckBoxs"),
 			formNewMeeting: document.getElementById("id_newMeeting"),
-			buttonSelectPartecipants: document.getElementById("id_goToPartecipantsModal"),
-			buttonSendNewMeeting: document.getElementById("id_sendNewMeeting")
+			buttonSelectParticipants: document.getElementById("id_goToParticipantsModal"),
+			buttonSendNewMeeting: document.getElementById("id_sendNewMeeting"),
+			maxParticipants: document.getElementById("maxParticipants")
 		});
 		this.loadContent = function(json) {
 
-			this.data.buttonSelectPartecipants.addEventListener('click', (e) => {
+			this.data.logout.addEventListener('click', () => {
+				self.logout();
+			});
+
+			this.data.buttonSelectParticipants.addEventListener('click', (e) => {
 
 				var form = e.target.closest("form");
 
 				if (form.checkValidity()) {
+					if (form.expirationHours.value > 0 || form.expirationMinutes.value > 0) {
+						var expirationDate = new Date(form.date.value + " " + form.hourAndMinutes.value + ":00").addHoursAndMinutes(form.expirationHours.value, form.expirationMinutes.value);
 
-					this.newMeeting.name = form.name.value;
-					this.newMeeting.date = form.date.value + " " + form.hourAndMinutes.value + ":00";
-					this.newMeeting.expirationDate = form.expirationDate.value + " " + form.expirationHourAndMinutes.value + ":00";
+						if (expirationDate - new Date() < 0) {
+							self.alert("Meeting already expired");
+						} else {
+							this.newMeeting.name = form.name.value;
+							this.newMeeting.date = form.date.value + " " + form.hourAndMinutes.value + ":00";
+							this.newMeeting.expirationDate = expirationDate.yyyymmddhhMMss;
+							this.data.participantsModal.style.display = "block";
+						}
+					}
+					else {
+						self.alert("Meeting must last at least one minute");
+					}
 
-					this.data.partecipantsModal.style.display = "block";
 				} else {
 					form.reportValidity();
 				}
@@ -56,34 +70,41 @@
 
 			self.data.buttonSendNewMeeting.addEventListener('click', () => {
 
+				self.newMeeting.participants = [];
+
 				document.getElementById("id_alert_newMeeting").innerText = "";
 
-				var chk_arr = document.getElementsById("checkbox[]");
+				var chk_arr = document.getElementsByName("checkbox[]");
 
 				for (k = 0; k < chk_arr.length; k++) {
 					if (chk_arr[k].checked) {
-						self.newMeeting.partecipants.push(chk_arr[k].value);
+						self.newMeeting.participants.push(chk_arr[k].value);
 					}
 				}
 
-				if (self.newMeeting.partecipants.length > 0) {
-
-					makeCall("POST", 'MeetingHandler', JSON.stringify(this.newMeeting),
-						function(req) {
-							if (req.readyState == XMLHttpRequest.DONE) {
-								var message = req.responseText;
-								switch (req.status) {
-									case 200:
-										this.updateNewMeeting();
-										break;
-									case 401:
-										this.logout();
-										break;
+				if (self.newMeeting.participants.length > 0) {
+					if (self.data.maxParticipants.value > self.newMeeting.participants.length) {
+						postJson('MeetingHandler', JSON.stringify(this.newMeeting),
+							function(req) {
+								if (req.readyState == XMLHttpRequest.DONE) {
+									var message = req.responseText;
+									switch (req.status) {
+										case 200:
+											self.data.participantsModal.style.display = "none";
+											self.updateNewMeeting();
+											break;
+										case 401:
+											this.logout();
+											break;
+									}
+									self.alert(message);
 								}
-								this.alert(message);
 							}
-						}
-					);
+						);
+					} else {
+						document.getElementById("id_alert_newMeeting").innerText = "Select at most " + self.data.maxParticipants.value + " participant"
+					}
+
 				} else {
 					document.getElementById("id_alert_newMeeting").innerText = "Select at least 1 participant"
 				}
@@ -92,8 +113,8 @@
 
 
 			window.addEventListener('click', (e) => {
-				if (e.target == this.data.partecipantsModal) {
-					this.data.partecipantsModal.style.display = "none";
+				if (e.target == this.data.participantsModal) {
+					this.data.participantsModal.style.display = "none";
 				}
 			}, false);
 
@@ -142,15 +163,18 @@
 					input = document.createElement("input");
 					input.setAttribute("type", "checkbox");
 					input.setAttribute("value", idAndName.id);
-					input.setAttribute("id", "checkbox[]")
+					input.setAttribute("id", idAndName.id);
+					input.setAttribute("name", "checkbox[]");
 
 					lable = document.createElement("lable");
+					lable.setAttribute("for", idAndName.id)
 					lable.innerText = idAndName.username;
 
-					self.data.partecipantsInput.appendChild(input);
-					self.data.partecipantsInput.appendChild(lable);
 
-					self.data.partecipantsInput.appendChild(document.createElement("br"));
+					self.data.participantsInput.appendChild(input);
+					self.data.participantsInput.appendChild(lable);
+
+					self.data.participantsInput.appendChild(document.createElement("br"));
 				}
 			});
 
@@ -175,7 +199,7 @@
 			date.textContent = this.newMeeting.date;
 
 			expirationDate = document.createElement("td");
-			expirationDate.textContent = meeting.expirationDate;
+			expirationDate.textContent = this.newMeeting.expirationDate;
 
 			row.appendChild(name);
 			row.appendChild(date);
@@ -187,7 +211,7 @@
 				name: null,
 				date: null,
 				expirationDate: null,
-				partecipants: []
+				participants: []
 			});
 		};
 	}
@@ -201,7 +225,6 @@
 				if (req.status == 200) {
 					console.log(JSON.parse(req.responseText));
 					meetingData.loadContent(JSON.parse(req.responseText));
-					meetingData.alert(message);
 
 				} else {
 					meetingData.logout();

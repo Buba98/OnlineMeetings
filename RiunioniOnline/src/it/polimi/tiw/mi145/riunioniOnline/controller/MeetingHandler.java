@@ -1,5 +1,6 @@
 package it.polimi.tiw.mi145.riunioniOnline.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,7 +16,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -98,8 +98,8 @@ public class MeetingHandler extends HttpServlet {
 		for (Meeting meeting : ownMeetings) {
 			ownMeetingJson = new JSONObject();
 			ownMeetingJson.put("name", meeting.getName());
-			ownMeetingJson.put("date", meeting.getDate().toString());
-			ownMeetingJson.put("expirationDate", meeting.getExpirationDate().toString());
+			ownMeetingJson.put("date", DateHandler.fromUtilToString(meeting.getDate()));
+			ownMeetingJson.put("expirationDate", DateHandler.fromUtilToString(meeting.getExpirationDate()));
 			ownMeetingsJson.put(ownMeetingJson);
 		}
 		jsonObject.put("ownMeetings", ownMeetingsJson);
@@ -109,8 +109,8 @@ public class MeetingHandler extends HttpServlet {
 		for (Meeting meeting : otherMeetings) {
 			otherMeetingJson = new JSONObject();
 			otherMeetingJson.put("name", meeting.getName());
-			otherMeetingJson.put("date", meeting.getDate().toString());
-			otherMeetingJson.put("expirationDate", meeting.getExpirationDate().toString());
+			otherMeetingJson.put("date", DateHandler.fromUtilToString(meeting.getDate()));
+			otherMeetingJson.put("expirationDate", DateHandler.fromUtilToString(meeting.getExpirationDate()));
 			otherMeetingsJson.put(otherMeetingJson);
 		}
 		jsonObject.put("otherMeetings", otherMeetingsJson);
@@ -148,12 +148,25 @@ public class MeetingHandler extends HttpServlet {
 			response.getWriter().println("Session expired, log in again");
 			return;
 		}
+		
 
-		String jsonString = StringEscapeUtils.escapeJava(request.getParameter("newMeeting"));
+		StringBuilder sb = new StringBuilder();
+	    BufferedReader reader = request.getReader();
+	    try {
+	        String line;
+	        while ((line = reader.readLine()) != null) {
+	            sb.append(line).append('\n');
+	        }
+	    } finally {
+	        reader.close();
+	    }
+	    
+		String jsonString = sb.toString();
+		System.out.println(jsonString);
 
 		if (jsonString == null || jsonString.isEmpty()) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println("Bad request");
+			response.getWriter().println("Nothing has been recived");
 			return;
 		}
 
@@ -164,10 +177,10 @@ public class MeetingHandler extends HttpServlet {
 		List<Integer> participants = null;
 
 		try {
-			json = new JSONObject(json);
+			json = new JSONObject(jsonString);
 			name = json.getString("name");
 			date = DateHandler.fromStringToUtil(json.getString("date"));
-			expirationDate = DateHandler.fromStringToUtil(json.getString("expriationDate"));
+			expirationDate = DateHandler.fromStringToUtil(json.getString("expirationDate"));
 			participants = new ArrayList<>();
 
 			JSONArray participantsArray = json.getJSONArray("participants");
@@ -176,6 +189,7 @@ public class MeetingHandler extends HttpServlet {
 				participants.add(participantsArray.getInt(i));
 			}
 		} catch (JSONException | ParseException e) {
+			e.printStackTrace();
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Bad request");
 			return;
@@ -192,6 +206,7 @@ public class MeetingHandler extends HttpServlet {
 		try {
 			meetingDAO.addMeating(name, date, expirationDate, participants, Integer.valueOf(id));
 		} catch (SQLException e) {
+			e.printStackTrace();
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println("Internal server error, retry later");
 			e.printStackTrace();
