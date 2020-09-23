@@ -59,6 +59,26 @@ Date.prototype.yyyymmddhhMMss = function() {
 	var hh = this.getHours();
 	var minutes = this.getMinutes();
 
-	return this.getFullYear() + "-" + (mm > 9 ? '' : '0') + mm + "-" + (dd > 9 ? '' : '0') + dd + " " + (hh > 9 ? '' : '0') + hh + ":" + (minutes > 9 ? '' : '0') + minutes + ":" + 00;
+	return this.getFullYear() + "-" + (mm > 9 ? '' : '0') + mm + "-" + (dd > 9 ? '' : '0') + dd + " " + (hh > 9 ? '' : '0') + hh + ":" + (minutes > 9 ? '' : '0') + minutes + ":00";
 };
 
+function msToTime(duration) {
+	var milliseconds = parseInt((duration % 1000) / 100),
+		seconds = Math.floor((duration / 1000) % 60),
+		minutes = Math.floor((duration / (1000 * 60)) % 60),
+		hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+	hours = (hours < 10) ? "0" + hours : hours;
+	minutes = (minutes < 10) ? "0" + minutes : minutes;
+	seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+	return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
+}
+
+function differenceDates(datestart, dateend) {
+	var diffMs = (dateend - datestart); // milliseconds between now & Christmas
+	var diffDays = Math.floor(diffMs / 86400000); // days
+	var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+	var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+	return ((diffDays > 0) ? diffDays + " days " : "") + ((diffHrs > 0) ? diffHrs + " hours " : "") + ((diffMins > 0) ? diffMins + " minutes" : "");
+}

@@ -55,7 +55,7 @@
 						} else {
 							this.newMeeting.name = form.name.value;
 							this.newMeeting.date = form.date.value + " " + form.hourAndMinutes.value + ":00";
-							this.newMeeting.expirationDate = expirationDate.yyyymmddhhMMss;
+							this.newMeeting.expirationDate = expirationDate.yyyymmddhhMMss();
 							this.data.participantsModal.style.display = "block";
 						}
 					}
@@ -83,7 +83,7 @@
 				}
 
 				if (self.newMeeting.participants.length > 0) {
-					if (self.data.maxParticipants.value > self.newMeeting.participants.length) {
+					if (self.data.maxParticipants.value >= self.newMeeting.participants.length) {
 						postJson('MeetingHandler', JSON.stringify(this.newMeeting),
 							function(req) {
 								if (req.readyState == XMLHttpRequest.DONE) {
@@ -130,7 +130,7 @@
 				date.textContent = meeting.date;
 
 				expirationDate = document.createElement("td");
-				expirationDate.textContent = meeting.expirationDate;
+				expirationDate.textContent = differenceDates(Date.parse(meeting.date.replace(" ", "T")), Date.parse(meeting.expirationDate.replace(" ", "T")));
 
 				row.appendChild(name);
 				row.appendChild(date);
@@ -149,7 +149,7 @@
 				date.textContent = meeting.date;
 
 				expirationDate = document.createElement("td");
-				expirationDate.textContent = meeting.expirationDate;
+				expirationDate.textContent = differenceDates(Date.parse(meeting.date.replace(" ", "T")), Date.parse(meeting.expirationDate.replace(" ", "T")));
 
 				row.appendChild(name);
 				row.appendChild(date);
@@ -199,7 +199,7 @@
 			date.textContent = this.newMeeting.date;
 
 			expirationDate = document.createElement("td");
-			expirationDate.textContent = this.newMeeting.expirationDate;
+			expirationDate.textContent = differenceDates(Date.parse(this.newMeeting.date.replace(" ", "T")), Date.parse(this.newMeeting.expirationDate.replace(" ", "T")));
 
 			row.appendChild(name);
 			row.appendChild(date);
@@ -219,11 +219,8 @@
 	function pageHandler() {
 		makeCall("GET", "MeetingHandler", null, function(req) {
 			if (req.readyState == 4) {
-				console.log(req);
-				var message = req.responseText;
 				meetingData = new MeetingData();
 				if (req.status == 200) {
-					console.log(JSON.parse(req.responseText));
 					meetingData.loadContent(JSON.parse(req.responseText));
 
 				} else {
