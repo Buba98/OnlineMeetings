@@ -24,6 +24,7 @@
 		});
 
 		this.data = ({
+			retry: 0,
 			alert: document.getElementById("id_alert"),
 			logout: document.getElementById("id_logout"),
 			ownMeetings: document.getElementById("id_ownMeetingsTable"),
@@ -57,6 +58,13 @@
 							this.newMeeting.date = form.date.value + " " + form.hourAndMinutes.value + ":00";
 							this.newMeeting.expirationDate = expirationDate.yyyymmddhhMMss();
 							this.data.participantsModal.style.display = "block";
+
+							form.name.value = "";
+							form.date.value = "";
+							form.hourAndMinutes.value = "";
+							form.expirationHours.value = 0;
+							form.expirationMinutes.value = 0;
+							form.maxParticipants.value = 1;
 						}
 					}
 					else {
@@ -102,7 +110,14 @@
 							}
 						);
 					} else {
-						document.getElementById("id_alert_newMeeting").innerText = "Select at most " + self.data.maxParticipants.value + " participant"
+						self.data.retry++;
+						if (self.data.retry < 3) {
+							document.getElementById("id_alert_newMeeting").innerText = "Select at most " + self.data.maxParticipants.value + " participant"
+						} else {
+							self.alert("Too many failed attempts");
+							self.data.participantsModal.style.display = "none";
+							self.reset();
+						}
 					}
 
 				} else {
@@ -115,6 +130,7 @@
 			window.addEventListener('click', (e) => {
 				if (e.target == this.data.participantsModal) {
 					this.data.participantsModal.style.display = "none";
+					self.reset();
 				}
 			}, false);
 
@@ -189,6 +205,17 @@
 			window.location.href = "index.html";
 		};
 
+		this.reset = function() {
+			document.getElementById("id_alert_newMeeting").innerText = "";
+
+			var chk_arr = document.getElementsByName("checkbox[]");
+			for (k = 0; k < chk_arr.length; k++) {
+				chk_arr[k].checked = false;
+			}
+
+			this.data.retry = 0;
+		};
+
 		this.updateNewMeeting = function() {
 			row = document.createElement("tr");
 
@@ -213,6 +240,8 @@
 				expirationDate: null,
 				participants: []
 			});
+
+			this.reset();
 		};
 	}
 
