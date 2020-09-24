@@ -54,7 +54,7 @@ Date.prototype.addHoursAndMinutes = function(h, m) {
 }
 
 Date.prototype.yyyymmddhhMMss = function() {
-	var mm = this.getMonth() + 1; // getMonth() is zero-based
+	var mm = this.getMonth() + 1;
 	var dd = this.getDate();
 	var hh = this.getHours();
 	var minutes = this.getMinutes();
@@ -76,9 +76,9 @@ function msToTime(duration) {
 }
 
 function differenceDates(datestart, dateend) {
-	var diffMs = (dateend - datestart); // milliseconds between now & Christmas
-	var diffDays = Math.floor(diffMs / 86400000); // days
-	var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-	var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+	var diffMs = (dateend - datestart);
+	var diffDays = Math.floor(diffMs / 86400000);
+	var diffHrs = Math.floor((diffMs % 86400000) / 3600000);
+	var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
 	return ((diffDays > 0) ? diffDays + " days " : "") + ((diffHrs > 0) ? diffHrs + " hours " : "") + ((diffMins > 0) ? diffMins + " minutes" : "");
 }
