@@ -2,7 +2,7 @@
 	var meetingData = null;
 
 	window.addEventListener("load", () => {
-		if (getCookie("person_id") == "" || getCookie("person_id") == null) {
+		if (getCookie("session") == "" || getCookie("session") == null) {
 			window.location.href = "index.html";
 		} else {
 			pageHandler();

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Login page</title>
+<style type="text/css">
+form {
+	margin: 0 auto;
+	width: 300px
+}
+
+input {
+	margin-bottom: 3px;
+	padding: 10px;
+	width: 100%;
+	border: 1px solid #CCC
+}
+
+button {
+	padding: 10px
+}
+
+label {
+	cursor: pointer
+}
+
+#form-switch {
+	display: none
+}
+
+#register-form {
+	display: none
+}
+
+#form-switch:checked ~#register-form {
+	display: block
+}
+
+#form-switch:checked ~#login-form {
+	display: none
+}
+</style>
+</head>
+<body>
+	<h1>Welcome to the meeting application</h1>
+
+	<input type='checkbox' id='form-switch'>
+	<form id='login-form' action="CheckLoginPureHTML" method='post'>
+		<input type="text" name="username" placeholder="Username" required> 
+		<input type="password" name="password" placeholder="Password" required>
+		<button type='submit'>Login</button>
+		<label for='form-switch'><span>Register</span></label>
+	</form>
+
+	<form id='register-form' action="SignUpPureHTML" method='post'>
+		<input type="text" name="username" placeholder="Username" required> 
+		<input type="email" placeholder="Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required> 
+		<input type="password" name="password" placeholder="Password" required>
+		<button type='submit'>Register</button>
+		<label for='form-switch'>Sign in</label>
+	</form>
+</body>
+</html>

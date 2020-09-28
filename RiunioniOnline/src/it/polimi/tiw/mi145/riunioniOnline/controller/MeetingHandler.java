@@ -25,6 +25,7 @@ import it.polimi.tiw.mi145.riunioniOnline.beans.User;
 import it.polimi.tiw.mi145.riunioniOnline.dao.MeetingDAO;
 import it.polimi.tiw.mi145.riunioniOnline.dao.UserDAO;
 import it.polimi.tiw.mi145.riunioniOnline.utils.ConnectionHandler;
+import it.polimi.tiw.mi145.riunioniOnline.utils.CookieHandler;
 import it.polimi.tiw.mi145.riunioniOnline.utils.DateHandler;
 import it.polimi.tiw.mi145.riunioniOnline.utils.StringValidation;
 
@@ -44,16 +45,17 @@ public class MeetingHandler extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String id = null;
-		String cookies = request.getHeader("Cookie");
-		String[] rawCookieParams = cookies.split(";");
-		for (String cookie : rawCookieParams) {
-			if (cookie.split("=")[0].compareTo("person_id") == 0) {
-				id = cookie.split("=")[1];
-			}
+		Integer id;
+		try {
+			id = CookieHandler.getUserIdByCookie(request, connection);
+		} catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("Internal server error, retry later");
+			e.printStackTrace();
+			return;
 		}
 
-		if (id == null || !StringValidation.isIntValid(id)) {
+		if (id == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().println("Session expired, log in again");
 			return;
@@ -148,19 +150,18 @@ public class MeetingHandler extends HttpServlet {
 			response.getWriter().println("Session expired, log in again");
 			return;
 		}
-		
 
 		StringBuilder sb = new StringBuilder();
-	    BufferedReader reader = request.getReader();
-	    try {
-	        String line;
-	        while ((line = reader.readLine()) != null) {
-	            sb.append(line).append('\n');
-	        }
-	    } finally {
-	        reader.close();
-	    }
-	    
+		BufferedReader reader = request.getReader();
+		try {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line).append('\n');
+			}
+		} finally {
+			reader.close();
+		}
+
 		String jsonString = sb.toString();
 		System.out.println(jsonString);
 

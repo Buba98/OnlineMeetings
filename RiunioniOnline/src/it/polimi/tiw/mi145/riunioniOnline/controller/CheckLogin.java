@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import it.polimi.tiw.mi145.riunioniOnline.beans.User;
 import it.polimi.tiw.mi145.riunioniOnline.dao.UserDAO;
 import it.polimi.tiw.mi145.riunioniOnline.utils.ConnectionHandler;
+import it.polimi.tiw.mi145.riunioniOnline.utils.CookieHandler;
 
 @WebServlet("/CheckLogin")
 @MultipartConfig
@@ -34,35 +35,43 @@ public class CheckLogin extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String usrn = null;
-		String pwd = null;
-		usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));
-		pwd = StringEscapeUtils.escapeJava(request.getParameter("pwd"));
-		if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty()) {
+
+		String username = null;
+		String password = null;
+		username = StringEscapeUtils.escapeJava(request.getParameter("username"));
+		password = StringEscapeUtils.escapeJava(request.getParameter("password"));
+		if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Credentials must be not null");
 			return;
 		}
-		UserDAO personDao = new UserDAO(connection);
-		User person = null;
+		UserDAO userDao = new UserDAO(connection);
+		User user = null;
 		try {
-			person = personDao.checkCredentials(usrn, pwd);
+			user = userDao.checkCredentials(username, password);
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println("Internal server error, retry later");
 			e.printStackTrace();
 			return;
 		}
-		if (person == null) {
+		if (user == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().println("Incorrect credentials");
 		} else {
-			Cookie cookie = new Cookie("person_id", String.valueOf(person.getId()));
-			cookie.setMaxAge(24 * 60 * 60);
-			response.addCookie(cookie);
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
+			try {
+				Cookie cookie = CookieHandler.getValidCookieByUserId(user.getId(), connection);
+				cookie.setMaxAge(24 * 60 * 60);
+				response.addCookie(cookie);
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+			} catch (SQLException e) {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.getWriter().println("Internal server error, retry later");
+				e.printStackTrace();
+				return;
+			}
 		}
 	}
 
