@@ -30,17 +30,17 @@ public class PatternSelectionHandler extends HttpServlet {
 		case "HTML":
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.getWriter().println("HTML pattern selected");
-			path += "indexPureHtml.html";
+			path += "/indexPureHtml.html";
 			break;
 		case "RIA":
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.getWriter().println("RIA pattern selected");
-			path += "index.html";
+			path += "/index.html";
 			break;
 		default:
 			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
 			response.getWriter().println("Pattern not valid");
-			path += "patternSelection.html";
+			path += "/patternSelection.html";
 			break;
 		}
 		response.sendRedirect(path);

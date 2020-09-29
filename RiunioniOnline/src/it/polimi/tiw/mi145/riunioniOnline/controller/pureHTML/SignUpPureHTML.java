@@ -2,9 +2,12 @@ package it.polimi.tiw.mi145.riunioniOnline.controller.pureHTML;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -34,7 +37,20 @@ public class SignUpPureHTML extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
-		connection = ConnectionHandler.getConnection(getServletContext());
+		ServletContext context = getServletContext();
+		try {
+
+			String driver = context.getInitParameter("dbDriver");
+			String url = context.getInitParameter("dbUrl");
+			String user = context.getInitParameter("dbUser");
+			String password = context.getInitParameter("dbPassword");
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, user, password);
+		} catch (ClassNotFoundException e) {
+			throw new UnavailableException("Can't load database driver");
+		} catch (SQLException e) {
+			throw new UnavailableException("Couldn't get db connection");
+		}
 	}
 
 	/**
@@ -49,7 +65,7 @@ public class SignUpPureHTML extends HttpServlet {
 		password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
 			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "indexPureHTML.html", "Credentials must be not null");
+					getServletContext().getContextPath() + "/indexPureHTML.html", "Credentials must be not null");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Credentials must be not null");
 			return;
@@ -60,7 +76,7 @@ public class SignUpPureHTML extends HttpServlet {
 			user = userDao.addUser(username, password);
 		} catch (SQLException e) {
 			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "indexPureHTML.html", "Internal server error, retry later");
+					getServletContext().getContextPath() + "/indexPureHTML.html", "Internal server error, retry later");
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println("Internal server error, retry later");
 			e.printStackTrace();
@@ -69,7 +85,7 @@ public class SignUpPureHTML extends HttpServlet {
 
 		if (user == null) {
 			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "indexPureHTML.html", "Duplicated username");
+					getServletContext().getContextPath() + "/indexPureHTML.html", "Duplicated username");
 			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
 			response.getWriter().println("Duplicated username");
 		} else {
@@ -80,16 +96,24 @@ public class SignUpPureHTML extends HttpServlet {
 				response.setStatus(HttpServletResponse.SC_OK);
 				response.setContentType("application/json");
 				response.setCharacterEncoding("UTF-8");
-				response.sendRedirect(getServletContext().getContextPath() + "homePagePureHTML");
+				response.sendRedirect(getServletContext().getContextPath() + "/homePagePureHTML");
 			} catch (SQLException e) {
 				UtilsPureHTML.alertPureHTML(response.getWriter(),
-						getServletContext().getContextPath() + "indexPureHTML.html",
+						getServletContext().getContextPath() + "/indexPureHTML.html",
 						"Internal server error, retry later");
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.getWriter().println("Internal server error, retry later");
 				e.printStackTrace();
 				return;
 			}
+		}
+	}
+
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 

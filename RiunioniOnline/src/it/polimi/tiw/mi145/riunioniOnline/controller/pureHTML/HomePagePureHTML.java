@@ -2,23 +2,25 @@ package it.polimi.tiw.mi145.riunioniOnline.controller.pureHTML;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-import org.thymeleaf.context.WebContext;
 
 import it.polimi.tiw.mi145.riunioniOnline.beans.Meeting;
 import it.polimi.tiw.mi145.riunioniOnline.beans.User;
@@ -26,8 +28,6 @@ import it.polimi.tiw.mi145.riunioniOnline.dao.MeetingDAO;
 import it.polimi.tiw.mi145.riunioniOnline.dao.UserDAO;
 import it.polimi.tiw.mi145.riunioniOnline.utils.ConnectionHandler;
 import it.polimi.tiw.mi145.riunioniOnline.utils.CookieHandler;
-import it.polimi.tiw.mi145.riunioniOnline.utils.DateHandler;
-import it.polimi.tiw.projects.controllers.WebContext;
 
 @WebServlet("/HomePagePureHTML")
 public class HomePagePureHTML extends HttpServlet {
@@ -50,9 +50,20 @@ public class HomePagePureHTML extends HttpServlet {
 		this.templateEngine = new TemplateEngine();
 		this.templateEngine.setTemplateResolver(templateResolver);
 		templateResolver.setSuffix(".html");
-		connection = ConnectionHandler.getConnection(getServletContext());
-	}
+		try {
 
+			String driver = servletContext.getInitParameter("dbDriver");
+			String url = servletContext.getInitParameter("dbUrl");
+			String user = servletContext.getInitParameter("dbUser");
+			String password = servletContext.getInitParameter("dbPassword");
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, user, password);
+		} catch (ClassNotFoundException e) {
+			throw new UnavailableException("Can't load database driver");
+		} catch (SQLException e) {
+			throw new UnavailableException("Couldn't get db connection");
+		}
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -72,29 +83,39 @@ public class HomePagePureHTML extends HttpServlet {
 			return;
 		}
 
-		User person = null;
+		User user = null;
 		List<Meeting> ownMeetings = null;
 		List<Meeting> otherMeetings = null;
-		List<String[]> idsAndNames = null;
+		List<Map<String, Object>> idsAndNames = new ArrayList<>();
 
 		try {
 			UserDAO userDAO = new UserDAO(connection);
-			person = userDAO.getUserById(Integer.valueOf(id));
+			user = userDAO.getUserById(Integer.valueOf(id));
 			ownMeetings = new ArrayList<>();
 
 			MeetingDAO meetingDAO = new MeetingDAO(connection);
 
-			for (int _id : person.getOwnMeetings()) {
+			for (int _id : user.getOwnMeetings()) {
 				ownMeetings.add(meetingDAO.getMeetingbyId(_id));
 			}
 
 			otherMeetings = new ArrayList<>();
 
-			for (int _id : person.getOtherMeetings()) {
+			for (int _id : user.getOtherMeetings()) {
 				otherMeetings.add(meetingDAO.getMeetingbyId(_id));
 			}
 
-			idsAndNames = userDAO.getAllIdsAndNames();
+			Map<String, Object> map;
+
+			for (String[] idAndName : userDAO.getAllIdsAndNames()) {
+
+				map = new HashMap<String, Object>();
+
+				map.put("id", idAndName[0]);
+				map.put("name", idAndName[1]);
+
+				idsAndNames.add(map);
+			}
 
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -102,13 +123,20 @@ public class HomePagePureHTML extends HttpServlet {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		String path = "/WEB-INF/HomePagePureHTML.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		
-		ctx.set
-		
+
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		map.put("ownMeetings", ownMeetings);
+		map.put("otherMeetings", otherMeetings);
+		map.put("idsAndNames", idsAndNames);
+		map.put("username", user.getUserName());
+
+		ctx.setVariables(map);
+
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
@@ -120,6 +148,14 @@ public class HomePagePureHTML extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+	}
+
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -39,7 +39,7 @@ public class SessionDAO {
 	}
 
 	public Session getSessionById(String uuid) throws SQLException {
-		String query = "SELECT * from intersection WHERE idsession = ?";
+		String query = "SELECT * from session WHERE idsession = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query)) {
 			pstatement.setString(1, uuid);
 			try (ResultSet result = pstatement.executeQuery()) {

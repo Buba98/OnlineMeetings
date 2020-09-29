@@ -7,6 +7,8 @@ import java.util.Date;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import it.polimi.tiw.mi145.riunioniOnline.beans.Session;
 import it.polimi.tiw.mi145.riunioniOnline.dao.SessionDAO;
 
@@ -16,13 +18,14 @@ public class CookieHandler {
 		Cookie[] cookies = request.getCookies();
 
 		for (Cookie cookie : cookies) {
-			if (cookie.getName() == "session") {
+			if (cookie.getName().equals("session") ) { 
+
 				SessionDAO sessionDAO = new SessionDAO(connection);
-				Session session = sessionDAO.getSessionById(cookie.getValue());
+				Session session = sessionDAO.getSessionById(StringEscapeUtils.escapeJava(cookie.getValue()));
 				if (session == null) {
 					return null;
 				}
-				if (new Date().getTime() - session.getDate().getTime() > 1000 * 60 * 60 * 24 * 2) {
+				if (new Date().getTime() - session.getDate().getTime() < 1000 * 60 * 60 * 24 * 2) {
 					return session.getUser();
 				} else {
 					sessionDAO.removeSessionById(cookie.getValue());

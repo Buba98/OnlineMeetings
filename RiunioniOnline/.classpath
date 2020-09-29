@@ -17,7 +17,7 @@
 	<classpathentry kind="lib" path="C:/Users/greco/projects/RiunioniOnline/WebContent/WEB-INF/lib/apache-commons-lang.jar"/>
 	<classpathentry kind="lib" path="C:/Users/greco/projects/RiunioniOnline/WebContent/WEB-INF/lib/javassist-3.20.0-GA.jar"/>
 	<classpathentry kind="lib" path="C:/Users/greco/projects/RiunioniOnline/WebContent/WEB-INF/lib/mysql-connector-java-8.0.15.jar"/>
-	<classpathentry kind="lib" path="C:/Users/greco/projects/RiunioniOnline/WebContent/WEB-INF/lib/thymeleaf-3.0.9.RELEASE.jar"/>
 	<classpathentry kind="lib" path="C:/Users/greco/projects/RiunioniOnline/WebContent/WEB-INF/lib/json-20200518.jar"/>
+	<classpathentry kind="lib" path="C:/Users/greco/projects/RiunioniOnline/WebContent/WEB-INF/lib/thymeleaf-3.0.11.RELEASE.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
