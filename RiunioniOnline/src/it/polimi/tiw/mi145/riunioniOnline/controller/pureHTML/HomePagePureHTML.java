@@ -24,7 +24,6 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import it.polimi.tiw.mi145.riunioniOnline.beans.Meeting;
 import it.polimi.tiw.mi145.riunioniOnline.beans.User;
 import it.polimi.tiw.mi145.riunioniOnline.dao.MeetingDAO;
 import it.polimi.tiw.mi145.riunioniOnline.dao.UserDAO;
@@ -75,14 +74,18 @@ public class HomePagePureHTML extends HttpServlet {
 			id = CookieHandler.getUserIdByCookie(request, connection);
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println("Internal server error, retry later");
+			response.sendRedirect(getServletContext().getContextPath()
+					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
+					+ getServletContext().getContextPath() + "/indexPureHTML.html");
 			e.printStackTrace();
 			return;
 		}
 
 		if (id == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.getWriter().println("Session expired, log in again");
+			response.sendRedirect(
+					getServletContext().getContextPath() + "/AlertPureHtml?message=Session+expired,+log+in+again&url="
+							+ getServletContext().getContextPath() + "/indexPureHTML.html");
 			return;
 		}
 
@@ -112,6 +115,9 @@ public class HomePagePureHTML extends HttpServlet {
 
 			for (String[] idAndName : userDAO.getAllIdsAndNames()) {
 
+				if (idAndName[0] == String.valueOf(id))
+					continue;
+
 				map = new HashMap<String, Object>();
 
 				map.put("id", idAndName[0]);
@@ -122,7 +128,9 @@ public class HomePagePureHTML extends HttpServlet {
 
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println("Internal server error, retry later");
+			response.sendRedirect(getServletContext().getContextPath()
+					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
+					+ getServletContext().getContextPath() + "/indexPureHTML.html");
 			e.printStackTrace();
 			return;
 		}
@@ -150,14 +158,18 @@ public class HomePagePureHTML extends HttpServlet {
 			id = CookieHandler.getUserIdByCookie(request, connection);
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println("Internal server error, retry later");
+			response.sendRedirect(getServletContext().getContextPath()
+					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
+					+ getServletContext().getContextPath() + "/indexPureHTML.html");
 			e.printStackTrace();
 			return;
 		}
 
 		if (id == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.getWriter().println("Session expired, log in again");
+			response.sendRedirect(
+					getServletContext().getContextPath() + "/AlertPureHtml?message=Session+expired,+log+in+again&url="
+							+ getServletContext().getContextPath() + "/indexPureHTML.html");
 			return;
 		}
 
@@ -181,8 +193,9 @@ public class HomePagePureHTML extends HttpServlet {
 				|| expirationMinutes == null || expirationMinutes.isEmpty() || maxParticipants == null
 				|| maxParticipants.isEmpty() || participants == null) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "/HomePagePureHTML", "Form fields must be not null");
+			response.sendRedirect(
+					getServletContext().getContextPath() + "/AlertPureHtml?message=Form+fields+must+be+not+null&url="
+							+ getServletContext().getContextPath() + "/HomePagePureHTML");
 			return;
 		}
 
@@ -197,17 +210,17 @@ public class HomePagePureHTML extends HttpServlet {
 
 			if (!(_endDate.after(_startDate) && _endDate.after(new Date()))) {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				UtilsPureHTML.alertPureHTML(response.getWriter(),
-						getServletContext().getContextPath() + "/HomePagePureHTML",
-						"Date or/and duration are not valid");
+				response.sendRedirect(getServletContext().getContextPath()
+						+ "/AlertPureHtml?message=Date+or/and+duration+are+not+valid&url="
+						+ getServletContext().getContextPath() + "/HomePagePureHTML");
 				return;
 			}
 
 			if (Integer.valueOf(maxParticipants) < participants.length) {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				UtilsPureHTML.alertPureHTML(response.getWriter(),
-						getServletContext().getContextPath() + "/HomePagePureHTML",
-						"Participants can't be more than max participants");
+				response.sendRedirect(getServletContext().getContextPath()
+						+ "/AlertPureHtml?message=Participants+can't+be+more+than+max+participants&url="
+						+ getServletContext().getContextPath() + "/HomePagePureHTML");
 				return;
 			}
 
@@ -219,8 +232,8 @@ public class HomePagePureHTML extends HttpServlet {
 
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "/HomePagePureHTML", "Bad request");
+			response.sendRedirect(getServletContext().getContextPath() + "/AlertPureHtml?message=Bad+request&url="
+					+ getServletContext().getContextPath() + "/HomePagePureHTML");
 			return;
 		}
 
@@ -231,20 +244,15 @@ public class HomePagePureHTML extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "/HomePagePureHTML", "Internal server error, retry later");
+			response.sendRedirect(getServletContext().getContextPath()
+					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
+					+ getServletContext().getContextPath() + "/indexPureHTML.html");
 			return;
 		}
 
 		response.setStatus(HttpServletResponse.SC_OK);
 
 		doGet(request, response);
-
-		/*
-		 * if (username == null || password == null || username.isEmpty() ||
-		 * password.isEmpty()) { response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		 * response.getWriter().println("Credentials must be not null"); return; }
-		 */
 	}
 
 	public void destroy() {

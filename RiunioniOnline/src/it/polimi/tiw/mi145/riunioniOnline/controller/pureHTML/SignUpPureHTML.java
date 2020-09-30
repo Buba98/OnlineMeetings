@@ -65,8 +65,9 @@ public class SignUpPureHTML extends HttpServlet {
 		password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "/indexPureHTML.html", "Credentials must be not null");
+			response.sendRedirect(
+					getServletContext().getContextPath() + "/AlertPureHtml?message=Credentials+must+be+not+null&url="
+							+ getServletContext().getContextPath() + "/indexPureHTML.html");
 			return;
 		}
 		UserDAO userDao = new UserDAO(connection);
@@ -75,16 +76,18 @@ public class SignUpPureHTML extends HttpServlet {
 			user = userDao.addUser(username, password);
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "/indexPureHTML.html", "Internal server error, retry later");
+			response.sendRedirect(getServletContext().getContextPath()
+					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
+					+ getServletContext().getContextPath() + "/indexPureHTML.html");
 			e.printStackTrace();
 			return;
 		}
 
 		if (user == null) {
 			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "/indexPureHTML.html", "Duplicated username");
+			response.sendRedirect(
+					getServletContext().getContextPath() + "/AlertPureHtml?message=Duplicate+username&url="
+							+ getServletContext().getContextPath() + "/indexPureHTML.html");
 		} else {
 			try {
 				Cookie cookie = CookieHandler.getValidCookieByUserId(user.getId(), connection);
@@ -95,11 +98,11 @@ public class SignUpPureHTML extends HttpServlet {
 				response.setCharacterEncoding("UTF-8");
 				response.sendRedirect(getServletContext().getContextPath() + "/homePagePureHTML");
 			} catch (SQLException e) {
-				UtilsPureHTML.alertPureHTML(response.getWriter(),
-						getServletContext().getContextPath() + "/indexPureHTML.html",
-						"Internal server error, retry later");
+				;
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				response.getWriter().println("Internal server error, retry later");
+				response.sendRedirect(getServletContext().getContextPath()
+						+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
+						+ getServletContext().getContextPath() + "/indexPureHTML.html");
 				e.printStackTrace();
 				return;
 			}

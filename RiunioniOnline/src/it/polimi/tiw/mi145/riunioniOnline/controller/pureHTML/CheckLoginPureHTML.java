@@ -53,10 +53,6 @@ public class CheckLoginPureHTML extends HttpServlet {
 		}
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String username = null;
@@ -64,10 +60,10 @@ public class CheckLoginPureHTML extends HttpServlet {
 		username = StringEscapeUtils.escapeJava(request.getParameter("username"));
 		password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
-			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "/indexPureHTML.html", "Credentials must be not null");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println("Credentials must be not null");
+			response.sendRedirect(
+					getServletContext().getContextPath() + "/AlertPureHtml?message=Credentials+must+be+not+null&url="
+							+ getServletContext().getContextPath() + "/indexPureHTML.html");
 			return;
 		}
 		UserDAO userDao = new UserDAO(connection);
@@ -75,19 +71,20 @@ public class CheckLoginPureHTML extends HttpServlet {
 		try {
 			user = userDao.checkCredentials(username, password);
 		} catch (SQLException e) {
-			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "/indexPureHTML.html", "Internal server error, retry later");
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println("Internal server error, retry later");
+			response.sendRedirect(getServletContext().getContextPath()
+					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
+					+ getServletContext().getContextPath() + "/indexPureHTML.html");
 			e.printStackTrace();
 			return;
 		}
 
 		if (user == null) {
-			UtilsPureHTML.alertPureHTML(response.getWriter(),
-					getServletContext().getContextPath() + "/indexPureHTML.html", "Incorrect credentials");
 			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-			response.getWriter().println("Incorrect credentials");
+			response.sendRedirect(
+					getServletContext().getContextPath() + "/AlertPureHtml?message=Incorrect+credentials&url="
+							+ getServletContext().getContextPath() + "/indexPureHTML.html");
+			return;
 		} else {
 			try {
 				Cookie cookie = CookieHandler.getValidCookieByUserId(user.getId(), connection);
@@ -98,17 +95,16 @@ public class CheckLoginPureHTML extends HttpServlet {
 				response.setCharacterEncoding("UTF-8");
 				response.sendRedirect(getServletContext().getContextPath() + "/HomePagePureHTML");
 			} catch (SQLException e) {
-				UtilsPureHTML.alertPureHTML(response.getWriter(),
-						getServletContext().getContextPath() + "/indexPureHTML.html",
-						"Internal server error, retry later");
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				response.getWriter().println("Internal server error, retry later");
+				response.sendRedirect(getServletContext().getContextPath()
+						+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
+						+ getServletContext().getContextPath() + "/indexPureHTML.html");
 				e.printStackTrace();
 				return;
 			}
 		}
 	}
-	
+
 	public void destroy() {
 		try {
 			ConnectionHandler.closeConnection(connection);
