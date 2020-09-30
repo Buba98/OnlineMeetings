@@ -1,7 +1,6 @@
 package it.polimi.tiw.mi145.riunioniOnline.beans;
 
 import java.util.List;
-import org.json.JSONObject;
 
 public class User {
 	private final Integer id;
@@ -37,29 +36,4 @@ public class User {
 	public List<Integer> getOtherMeetings() {
 		return otherMeetings;
 	}
-
-	public String toJson() {
-		
-		JSONObject ownMeetingsJson = new JSONObject();
-		int i = 0;
-		for (Integer id : ownMeetings) {
-			ownMeetingsJson.put(String.valueOf(i), id.toString());
-			i++;
-		}
-		
-		JSONObject otherMeetingsJson = new JSONObject();
-		i = 0;
-		for (Integer id : otherMeetings) {
-			otherMeetingsJson.put(String.valueOf(i), id.toString());
-			i++;
-		}
-		
-		return new JSONObject()
-				.put("id", id.toString())
-				.put("userName", userName)
-				.put("ownMeetings", ownMeetingsJson)
-				.put("otherMeetings", otherMeetingsJson)
-				.toString();
-	}
-
 }

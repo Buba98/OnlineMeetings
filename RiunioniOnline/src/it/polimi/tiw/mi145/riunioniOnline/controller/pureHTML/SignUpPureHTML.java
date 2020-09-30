@@ -64,10 +64,9 @@ public class SignUpPureHTML extends HttpServlet {
 		username = StringEscapeUtils.escapeJava(request.getParameter("username"));
 		password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			UtilsPureHTML.alertPureHTML(response.getWriter(),
 					getServletContext().getContextPath() + "/indexPureHTML.html", "Credentials must be not null");
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println("Credentials must be not null");
 			return;
 		}
 		UserDAO userDao = new UserDAO(connection);
@@ -75,19 +74,17 @@ public class SignUpPureHTML extends HttpServlet {
 		try {
 			user = userDao.addUser(username, password);
 		} catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			UtilsPureHTML.alertPureHTML(response.getWriter(),
 					getServletContext().getContextPath() + "/indexPureHTML.html", "Internal server error, retry later");
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println("Internal server error, retry later");
 			e.printStackTrace();
 			return;
 		}
 
 		if (user == null) {
+			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
 			UtilsPureHTML.alertPureHTML(response.getWriter(),
 					getServletContext().getContextPath() + "/indexPureHTML.html", "Duplicated username");
-			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-			response.getWriter().println("Duplicated username");
 		} else {
 			try {
 				Cookie cookie = CookieHandler.getValidCookieByUserId(user.getId(), connection);

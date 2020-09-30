@@ -1,9 +1,11 @@
 package it.polimi.tiw.mi145.riunioniOnline.beans;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.json.JSONObject;
+import it.polimi.tiw.mi145.riunioniOnline.utils.DateHandler;
 
 public class Meeting {
 	private final Integer id;
@@ -45,31 +47,21 @@ public class Meeting {
 	public Integer getOwner() {
 		return owner;
 	}
-	
-	public String getDuration() {
+
+	public Map<String, Object> getMap() {
+
 		long diffMs = expirationDate.getTime() - date.getTime();
 		int diffDays = (int) Math.floor(diffMs / 86400000);
 		int diffHrs = (int) Math.floor((diffMs % 86400000) / 3600000);
 		int diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
-		return ((diffDays > 0) ? diffDays + " days " : "") + ((diffHrs > 0) ? diffHrs + " hours " : "") + ((diffMins > 0) ? diffMins + " minutes" : "");
-	}
+		Map<String, Object> toReturn = new HashMap<String, Object>();
 
-	public String toJson() {
+		toReturn.put("name", this.name);
+		toReturn.put("date", DateHandler.fromUtilToString(date));
+		toReturn.put("duration", ((diffDays > 0) ? diffDays + " days " : "")
+				+ ((diffHrs > 0) ? diffHrs + " hours " : "") + ((diffMins > 0) ? diffMins + " minutes" : ""));
 
-		JSONObject participantsJson = new JSONObject();
-		int i = 0;
-		for (Integer id : participants) {
-			participantsJson.put(String.valueOf(i), id.toString());
-			i++;
-		}
+		return toReturn;
 
-		return new JSONObject()
-				.put("id", id.toString())
-				.put("name", name)
-				.put("date", date.toString())
-				.put("expirationDate", expirationDate.toString())
-				.put("participants", participantsJson.toString())
-				.put("owner", owner.toString())
-				.toString();
 	}
 }
