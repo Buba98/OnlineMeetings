@@ -67,7 +67,7 @@ public class SignUpPureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.sendRedirect(
 					getServletContext().getContextPath() + "/AlertPureHtml?message=Credentials+must+be+not+null&url="
-							+ getServletContext().getContextPath() + "/indexPureHTML.html");
+							+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			return;
 		}
 		UserDAO userDao = new UserDAO(connection);
@@ -78,7 +78,7 @@ public class SignUpPureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.sendRedirect(getServletContext().getContextPath()
 					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
-					+ getServletContext().getContextPath() + "/indexPureHTML.html");
+					+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			e.printStackTrace();
 			return;
 		}
@@ -87,7 +87,7 @@ public class SignUpPureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
 			response.sendRedirect(
 					getServletContext().getContextPath() + "/AlertPureHtml?message=Duplicate+username&url="
-							+ getServletContext().getContextPath() + "/indexPureHTML.html");
+							+ getServletContext().getContextPath() + "/indexPureHtml.html");
 		} else {
 			try {
 				Cookie cookie = CookieHandler.getValidCookieByUserId(user.getId(), connection);
@@ -102,7 +102,7 @@ public class SignUpPureHTML extends HttpServlet {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.sendRedirect(getServletContext().getContextPath()
 						+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
-						+ getServletContext().getContextPath() + "/indexPureHTML.html");
+						+ getServletContext().getContextPath() + "/indexPureHtml.html");
 				e.printStackTrace();
 				return;
 			}

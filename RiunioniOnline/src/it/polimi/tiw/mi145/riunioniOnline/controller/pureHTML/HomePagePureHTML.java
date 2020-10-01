@@ -37,14 +37,6 @@ public class HomePagePureHTML extends HttpServlet {
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public HomePagePureHTML() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
 	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
@@ -76,7 +68,7 @@ public class HomePagePureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.sendRedirect(getServletContext().getContextPath()
 					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
-					+ getServletContext().getContextPath() + "/indexPureHTML.html");
+					+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			e.printStackTrace();
 			return;
 		}
@@ -85,7 +77,7 @@ public class HomePagePureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.sendRedirect(
 					getServletContext().getContextPath() + "/AlertPureHtml?message=Session+expired,+log+in+again&url="
-							+ getServletContext().getContextPath() + "/indexPureHTML.html");
+							+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			return;
 		}
 
@@ -115,22 +107,22 @@ public class HomePagePureHTML extends HttpServlet {
 
 			for (String[] idAndName : userDAO.getAllIdsAndNames()) {
 
-				if (idAndName[0] == String.valueOf(id))
-					continue;
+				if (Integer.valueOf(idAndName[0]) != id) {
 
-				map = new HashMap<String, Object>();
+					map = new HashMap<String, Object>();
 
-				map.put("id", idAndName[0]);
-				map.put("name", idAndName[1]);
+					map.put("id", idAndName[0]);
+					map.put("name", StringEscapeUtils.unescapeJava(idAndName[1]));
 
-				idsAndNames.add(map);
+					idsAndNames.add(map);
+				}
 			}
 
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.sendRedirect(getServletContext().getContextPath()
 					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
-					+ getServletContext().getContextPath() + "/indexPureHTML.html");
+					+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			e.printStackTrace();
 			return;
 		}
@@ -160,7 +152,7 @@ public class HomePagePureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.sendRedirect(getServletContext().getContextPath()
 					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
-					+ getServletContext().getContextPath() + "/indexPureHTML.html");
+					+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			e.printStackTrace();
 			return;
 		}
@@ -169,7 +161,7 @@ public class HomePagePureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.sendRedirect(
 					getServletContext().getContextPath() + "/AlertPureHtml?message=Session+expired,+log+in+again&url="
-							+ getServletContext().getContextPath() + "/indexPureHTML.html");
+							+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			return;
 		}
 
@@ -246,7 +238,7 @@ public class HomePagePureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.sendRedirect(getServletContext().getContextPath()
 					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
-					+ getServletContext().getContextPath() + "/indexPureHTML.html");
+					+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			return;
 		}
 

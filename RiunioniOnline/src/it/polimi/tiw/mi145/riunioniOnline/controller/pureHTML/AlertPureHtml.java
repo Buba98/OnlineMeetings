@@ -39,8 +39,7 @@ public class AlertPureHtml extends HttpServlet {
 			map.put("message", request.getParameterValues("message")[0]);
 			map.put("url", request.getParameterValues("url")[0]);
 		} catch (Exception e) {
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.getWriter().println("HTML pattern selected");
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.sendRedirect(getServletContext().getContextPath() + "/AlertPureHtml?message=Generic+Error&url="
 					+ getServletContext().getContextPath() + "/AlertPureHtml");
 			return;

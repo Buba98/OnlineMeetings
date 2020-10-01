@@ -8,10 +8,6 @@
 	border: 1px solid black;
 }
 
-.alertmessage {
-	color: red;
-}
-
 table, th, td {
 	border: 1px solid black;
 }
@@ -92,13 +88,12 @@ table, th, td {
 </head>
 <body>
 	<div align="right">
-		<a id="id_logout">Logout</a>
+		<a th:href="@{/Logout}">Logout</a>
 	</div>
 	<h1>Welcome to the Client-Server Meetings Management</h1>
 	<p>
 		Nice to see you again <span th:text="${username}"></span>
 	</p>
-	<div id="id_alert" class="alertmessage"></div>
 	<table>
 		<tr>
 			<td><table class="boxed">

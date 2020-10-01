@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -16,9 +17,12 @@ public class CookieHandler {
 
 	public static Integer getUserIdByCookie(HttpServletRequest request, Connection connection) throws SQLException {
 		Cookie[] cookies = request.getCookies();
+		
+		if (cookies == null)
+			return null;
 
 		for (Cookie cookie : cookies) {
-			if (cookie.getName().equals("session") ) { 
+			if (cookie.getName().equals("session")) {
 
 				SessionDAO sessionDAO = new SessionDAO(connection);
 				Session session = sessionDAO.getSessionById(StringEscapeUtils.escapeJava(cookie.getValue()));
@@ -35,12 +39,27 @@ public class CookieHandler {
 		}
 		return null;
 	}
-	
+
 	public static Cookie getValidCookieByUserId(int userId, Connection connection) throws SQLException {
 		SessionDAO sessionDAO = new SessionDAO(connection);
-		
+
 		sessionDAO.removeSessionByUserId(userId);
+
+		return new Cookie("session", sessionDAO.addSession(userId));
+	}
+
+	public static void removeCookie(HttpServletRequest request, HttpServletResponse response, Connection connection)
+			throws SQLException {
 		
-		return new Cookie ("session", sessionDAO.addSession(userId));
+		Integer userId = getUserIdByCookie(request, connection);
+		if(userId == null)
+			return;
+		
+		SessionDAO sessionDAO = new SessionDAO(connection);
+		sessionDAO.removeSessionByUserId(userId);
+
+		Cookie cookie = new Cookie("session", "");
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
 	}
 }

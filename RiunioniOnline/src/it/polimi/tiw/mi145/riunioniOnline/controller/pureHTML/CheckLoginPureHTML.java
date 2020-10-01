@@ -63,7 +63,7 @@ public class CheckLoginPureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.sendRedirect(
 					getServletContext().getContextPath() + "/AlertPureHtml?message=Credentials+must+be+not+null&url="
-							+ getServletContext().getContextPath() + "/indexPureHTML.html");
+							+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			return;
 		}
 		UserDAO userDao = new UserDAO(connection);
@@ -74,7 +74,7 @@ public class CheckLoginPureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.sendRedirect(getServletContext().getContextPath()
 					+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
-					+ getServletContext().getContextPath() + "/indexPureHTML.html");
+					+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			e.printStackTrace();
 			return;
 		}
@@ -83,7 +83,7 @@ public class CheckLoginPureHTML extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
 			response.sendRedirect(
 					getServletContext().getContextPath() + "/AlertPureHtml?message=Incorrect+credentials&url="
-							+ getServletContext().getContextPath() + "/indexPureHTML.html");
+							+ getServletContext().getContextPath() + "/indexPureHtml.html");
 			return;
 		} else {
 			try {
@@ -98,7 +98,7 @@ public class CheckLoginPureHTML extends HttpServlet {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.sendRedirect(getServletContext().getContextPath()
 						+ "/AlertPureHtml?message=Internal+server+error,+retry+later&url="
-						+ getServletContext().getContextPath() + "/indexPureHTML.html");
+						+ getServletContext().getContextPath() + "/indexPureHtml.html");
 				e.printStackTrace();
 				return;
 			}
