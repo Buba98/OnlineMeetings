@@ -244,7 +244,8 @@ public class HomePagePureHTML extends HttpServlet {
 
 		response.setStatus(HttpServletResponse.SC_OK);
 
-		doGet(request, response);
+		response.sendRedirect(getServletContext().getContextPath()
+				+ "/HomePagePureHTML");
 	}
 
 	public void destroy() {
