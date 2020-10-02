@@ -102,7 +102,7 @@
 											self.updateNewMeeting();
 											break;
 										case 401:
-											this.logout();
+											self.logout();
 											break;
 									}
 									self.alert(message);
@@ -175,7 +175,6 @@
 			});
 
 			json.idsAndNames.forEach(function(idAndName) {
-				if (idAndName.id != getCookie("person_id")) {
 					input = document.createElement("input");
 					input.setAttribute("type", "checkbox");
 					input.setAttribute("value", idAndName.id);
@@ -191,7 +190,6 @@
 					self.data.participantsInput.appendChild(lable);
 
 					self.data.participantsInput.appendChild(document.createElement("br"));
-				}
 			});
 
 		};

@@ -30,7 +30,6 @@ import it.polimi.tiw.mi145.riunioniOnline.dao.UserDAO;
 import it.polimi.tiw.mi145.riunioniOnline.utils.ConnectionHandler;
 import it.polimi.tiw.mi145.riunioniOnline.utils.CookieHandler;
 import it.polimi.tiw.mi145.riunioniOnline.utils.DateHandler;
-import it.polimi.tiw.mi145.riunioniOnline.utils.StringValidation;
 
 @WebServlet("/MeetingHandler")
 @MultipartConfig
@@ -136,10 +135,12 @@ public class MeetingHandler extends HttpServlet {
 		JSONArray idsAndNamesJson = new JSONArray();
 		JSONObject idAndNameJson = null;
 		for (String[] idAndName : idsAndNames) {
-			idAndNameJson = new JSONObject();
-			idAndNameJson.put("id", idAndName[0]);
-			idAndNameJson.put("username", idAndName[1]);
-			idsAndNamesJson.put(idAndNameJson);
+			if (!idAndName[0].equals(String.valueOf(id))) {
+				idAndNameJson = new JSONObject();
+				idAndNameJson.put("id", idAndName[0]);
+				idAndNameJson.put("username", idAndName[1]);
+				idsAndNamesJson.put(idAndNameJson);
+			}
 		}
 		jsonObject.put("idsAndNames", idsAndNamesJson);
 
@@ -152,16 +153,17 @@ public class MeetingHandler extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String id = null;
-		String cookies = request.getHeader("Cookie");
-		String[] rawCookieParams = cookies.split(";");
-		for (String cookie : rawCookieParams) {
-			if (cookie.split("=")[0].compareTo("person_id") == 0) {
-				id = cookie.split("=")[1];
-			}
+		Integer id;
+		try {
+			id = CookieHandler.getUserIdByCookie(request, connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("Internal server error, retry later");
+			return;
 		}
 
-		if (id == null || !StringValidation.isIntValid(id)) {
+		if (id == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().println("Session expired, log in again");
 			return;
@@ -221,12 +223,11 @@ public class MeetingHandler extends HttpServlet {
 		MeetingDAO meetingDAO = new MeetingDAO(connection);
 
 		try {
-			meetingDAO.addMeating(name, date, expirationDate, participants, Integer.valueOf(id));
+			meetingDAO.addMeating(name, date, expirationDate, participants, id);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println("Internal server error, retry later");
-			e.printStackTrace();
 			return;
 		}
 
