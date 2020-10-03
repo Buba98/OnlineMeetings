@@ -96,7 +96,7 @@ public class SignUpPureHTML extends HttpServlet {
 				response.setStatus(HttpServletResponse.SC_OK);
 				response.setContentType("application/json");
 				response.setCharacterEncoding("UTF-8");
-				response.sendRedirect(getServletContext().getContextPath() + "/homePagePureHTML");
+				response.sendRedirect(getServletContext().getContextPath() + "/HomePagePureHTML");
 			} catch (SQLException e) {
 				;
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
